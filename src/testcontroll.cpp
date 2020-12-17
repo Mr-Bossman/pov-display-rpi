@@ -1,3 +1,5 @@
+#include "spi.h"
+#include "common.h"
 #define chips 6
 #define degreesIn 360
 
