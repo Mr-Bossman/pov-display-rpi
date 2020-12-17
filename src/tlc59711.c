@@ -1,6 +1,9 @@
 #include "tlc59711.h"
 static uint32_t command = 0;
 static int fd = 0;
+
+static uint32_t CommandInit();
+
 extern int tlc59711_init(const char *device)
 {
     command = CommandInit(); // need to set modes
@@ -13,7 +16,8 @@ extern int tlc59711_init(const char *device)
     int fd = spi_init(&modes, device);
     return fd;
 } 
-extern void tlc59711_send(const uint16_t data[12]){
+extern void tlc59711_send(const uint16_t data[12])
+{
     uint8_t rx[24]; // throw away
    	uint8_t tx[24];
 
@@ -36,7 +40,8 @@ extern void tlc59711_send(const uint16_t data[12]){
 }
 
 
-static uint32_t CommandInit(){
+static uint32_t CommandInit()
+{
     uint32_t commands = 0;
     commands = 0x25;
     commands <<= 5;

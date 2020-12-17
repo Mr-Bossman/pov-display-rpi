@@ -6,3 +6,4 @@ automake --add-missing
 automake
 ./configure
 make
+chmod +x main

@@ -20,6 +20,7 @@
 static spiMode _mode;
 
 static int fd;
+
 extern int transfer(uint8_t tx[], uint8_t rx[],unsigned int size)
 {
 	int ret;
