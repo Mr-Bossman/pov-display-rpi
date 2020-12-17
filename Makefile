@@ -16,11 +16,12 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(OBJ): $(SRCDIR)/*.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
-
+.DEFAULT_GOAL := all
 all: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o
+	find . -type f -executable -exec rm '{}' \;
