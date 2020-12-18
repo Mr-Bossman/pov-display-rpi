@@ -16,7 +16,7 @@ extern int tlc59711_init(const char *device)
     int fd = spi_init(&modes, device);
     return fd;
 } 
-extern void tlc59711_send(const uint16_t data[12])
+extern int tlc59711_send(const uint16_t data[12])
 {
     uint8_t rx[24]; // throw away
    	uint8_t tx[24];
@@ -25,7 +25,10 @@ extern void tlc59711_send(const uint16_t data[12])
     tx[1] = command >> 16;
     tx[2] = command >> 8;
     tx[3] = command;
-    transfer(tx,rx,4);
+    int ret; 
+    if((ret = transfer(tx,rx,4)) < 0){
+        return ret;
+    }
 
 
     // 12 channels per TLC59711
@@ -36,7 +39,7 @@ extern void tlc59711_send(const uint16_t data[12])
         //spiSend(data[c]);
         tx[c << 1] = 0xFF;
     }
-    transfer(tx,rx,24);
+    return transfer(tx,rx,24);
 }
 
 

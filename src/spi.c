@@ -35,7 +35,7 @@ extern int transfer(uint8_t tx[], uint8_t rx[],unsigned int size)
 
 	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
 	if (ret < 1)
-		printf("can't send spi message");
+		printf("can't send spi message\n");
 	return ret;	
 }
 extern int spi_init(spiMode* modes,const char *device )
