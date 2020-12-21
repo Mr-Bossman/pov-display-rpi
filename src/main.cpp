@@ -2,7 +2,7 @@
 #include "spi.h"
 #include "tlc59711.h"
 #include "GPIO.h"
-#include <sys/time.h>
+#include <time.h>
 
 #define chips 6
 #define degreesIn 360
@@ -13,12 +13,11 @@ inline static int readPin()
        return GPIORead(1);
 
 }
-inline static uint64_t getTime()
+uint64_t micros()
 {
-
-struct timeval time;
-gettimeofday(&time, NULL);
-return time.tv_usec;
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    return ((uint64_t) now.tv_sec) * 1000000 + ((uint64_t) now.tv_nsec) / 1000;
 }
 
 
@@ -31,13 +30,14 @@ int main(int argc, char *argv[])
     GPIOInit(1,IN);
     tlc59711_init("/dev/spidev0.1");
     uint16_t pwmbuffer[chips][12];
+    uint16_t zero[12] = {0};
     uint64_t delay = 0,last=0;
     bool went_back = true;
     while (1)
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
         { // go thorugh degrees
-            while (last + ((delay)*deg) > getTime())
+            while (last + ((delay)*deg) > micros())
             { // sleep between lines
                 if (readPin())
                     went_back = true;        // we can now wait for the next edge
@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
             lines(pwmbuffer);
         }
     end:
+    tlc59711_send(zero);
         while (readPin())
             ; // wait till it goes low if we exited the loop early
         getDelay(delay, last);
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 void getDelay(uint64_t &delay, uint64_t &last)
 {
     uint64_t tmp = last;
-    last = getTime();
+    last = micros();
         delay = (tmp - last) / degreesIn;
 }
 void lines(uint16_t data[chips][12])
