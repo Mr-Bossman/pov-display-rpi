@@ -24,7 +24,7 @@ return time.tv_usec;
 
 void lines(uint16_t data[chips][12]);
 
-void getDelay(uint64_t &delay, struct timeval &last);
+void getDelay(uint64_t &delay, uint64_t &last);
 
 int main(int argc, char *argv[])
 {
