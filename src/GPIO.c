@@ -9,9 +9,6 @@
 #define LOW  0
 #define HIGH 1
 
-#define PIN  24 /* P1-18 */
-#define POUT 4  /* P1-07 */
-
 static int fd;
 
 static int GPIOExport(int pin)
@@ -128,7 +125,7 @@ extern int GPIOInit(int pin,int dir)
 {
     if (-1 == GPIOExport(pin))
 	    return(-1);
-    if (-1 == GPIODirection(POUT, dir) || -1 == GPIODirection(PIN, dir))
+    if (-1 == GPIODirection(pin, dir) || -1 == GPIODirection(pin, dir))
 	   	return(-2);
     return 0;
 }

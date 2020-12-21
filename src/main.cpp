@@ -62,7 +62,7 @@ void getDelay(uint64_t &delay, uint64_t &last)
 {
     uint64_t tmp = last;
     last = micros();
-        delay = (tmp - last) / degreesIn;
+        delay = (last - tmp) / degreesIn;
 }
 void lines(uint16_t data[chips][12])
 {
