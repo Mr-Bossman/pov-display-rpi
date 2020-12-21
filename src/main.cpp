@@ -27,7 +27,8 @@ void getDelay(uint64_t &delay, uint64_t &last);
 
 int main(int argc, char *argv[])
 {
-    GPIOInit(1,IN);
+    GPIOInit();
+    GPIOPinmode(1,IN);
     tlc59711_init("/dev/spidev0.1");
     uint16_t pwmbuffer[chips][12];
     uint16_t zero[12] = {0};
