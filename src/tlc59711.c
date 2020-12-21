@@ -10,7 +10,7 @@ extern int tlc59711_init(const char *device)
     spiMode modes = {
         .mode = 0,
         .bits = 8,
-        .speed = 500000,
+        .speed = 12000000,
         .delay = 0};
 
     int fd = spi_init(&modes, device);
@@ -35,8 +35,8 @@ extern int tlc59711_send(const uint16_t data[12])
     for (int8_t c = 11; c >= 0; c--) {
 
         // 16 bits per channel, send MSB first
-        tx[(c<< 1)+1] = data[c] >> 8;
-        tx[c << 1] = data[c];
+        tx[c << 1] = data[c] >> 8;
+        tx[(c<< 1)+1] = data[c];
     }
     return transfer(tx,rx,24);
 }
