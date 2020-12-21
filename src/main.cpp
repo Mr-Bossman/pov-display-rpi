@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
                 if (!readPin() && went_back) // we are still in the loop but we need to exit
                     goto end;
             } // sleep between lines
-            for (uint8_t i = 0; i < 72; i++)
+            for (uint8_t i = 0; i < chips*12; i++)
             {
-                pwmbuffer[i/12][i%12] = lester[deg][i];
+                pwmbuffer[(chips-1)-(i/12)][11-(i%12)] = lester[deg][i];
             }
             lines(pwmbuffer);
         }
