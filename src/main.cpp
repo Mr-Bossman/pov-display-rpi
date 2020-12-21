@@ -35,22 +35,13 @@ int main(int argc, char *argv[])
     GPIOInit();
     GPIOPinmode(0,IN);
     tlc59711_init("/dev/spidev0.1");
-    uint16_t zero[12] = {0};
     uint64_t delay = 0,last=0;
     bool went_back = true;
-    std::thread bruhwhy[2];
-    bruhwhy[0] = std::thread(lines,pwmbuffer);
-    bruhwhy[1] = std::thread(lines,pwmbuffer);
 
     while (1)
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
         { // go thorugh degrees
-                    /*for (uint8_t i = 0; i < 72; i++)
-            {
-                pwmbuffer[i/12][i%12] = lester[deg][i];
-        }*/
-
             while (last + ((delay)*deg) > micros())
             { // sleep between lines
                 if (readPin())
@@ -69,21 +60,17 @@ int main(int argc, char *argv[])
                     pwmbuffer[i/12][i%12] = 0x00;
                 }
             }
-            if(bruhwhy[0].joinable()){
-                bruhwhy[0].join();
-                bruhwhy[0] = std::thread(lines,pwmbuffer);
-           } else if (bruhwhy[1].joinable()){
-                bruhwhy[0].join();
-                bruhwhy[1] = std::thread(lines,pwmbuffer);
-           }
-
+            /*for (uint8_t i = 0; i < 72; i++)
+            {
+                pwmbuffer[i/12][i%12] = lester[deg][i];
+            }*/
+            lines(pwmbuffer);
         }
     end:
-        while (readPin())
-            ; // wait till it goes low if we exited the loop early
+        while (readPin()); // wait till it goes low if we exited the loop early
         getDelay(delay, last);
         went_back = false; //make shure we trigger on the rising edge
-        printf("%llu\n",delay);
+        printf("%lu\n",delay);
 
     }
 }
@@ -93,8 +80,11 @@ void getDelay(uint64_t &delay, uint64_t &last)
     last = micros();
         delay = (last - tmp) / degreesIn;
 }
-void lines(uint16_t data[chips][12])
+void lines(uint16_t line[chips][12])
 {
+    uint8_t* data = new uint8_t[chips*28];
     for (int i = 0; i < chips; i++)
-        tlc59711_send(data[i]);
+        tlc59711_create(line[i],data+(28*i));
+    transfer(data,nullptr,chips*28);
+    
 }

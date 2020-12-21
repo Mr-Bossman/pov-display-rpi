@@ -12,11 +12,9 @@
 #define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "common.h"
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <unistd.h>
 
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
@@ -70,7 +68,7 @@ extern int GPIOInit()
    close(mem_fd); //No need to keep mem_fd open after mmap
 
    if (gpio_map == MAP_FAILED) {
-      printf("mmap error %d\n", gpio_map);//errno also set!
+      printf("mmap error %lu\n", (uint64_t)gpio_map);//errno also set!
       return -1;
    }
 
