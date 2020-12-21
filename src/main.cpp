@@ -2,6 +2,8 @@
 #include "spi.h"
 #include "tlc59711.h"
 #include "GPIO.h"
+#include <iostream>       // std::cout
+#include <thread>         // std::thread
 #include <time.h>
 
 #define chips 6
@@ -21,6 +23,9 @@ uint64_t micros()
 }
 
 
+uint16_t pwmbuffer[chips][12];
+
+
 void lines(uint16_t data[chips][12]);
 
 void getDelay(uint64_t &delay, uint64_t &last);
@@ -30,7 +35,6 @@ int main(int argc, char *argv[])
     GPIOInit();
     GPIOPinmode(0,IN);
     tlc59711_init("/dev/spidev0.1");
-    uint16_t pwmbuffer[chips][12];
     uint16_t zero[12] = {0};
     uint64_t delay = 0,last=0;
     bool went_back = true;
@@ -38,14 +42,7 @@ int main(int argc, char *argv[])
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
         { // go thorugh degrees
-            while (last + ((delay)*deg) > micros())
-            { // sleep between lines
-                if (readPin())
-                    went_back = true;        // we can now wait for the next edge
-                if (!readPin() && went_back) // we are still in the loop but we need to exit
-                    goto end;
-            } // sleep between lines
-            /*for (uint8_t i = 0; i < 72; i++)
+                    /*for (uint8_t i = 0; i < 72; i++)
             {
                 pwmbuffer[i/12][i%12] = lester[deg][i];
         }*/
@@ -60,8 +57,15 @@ int main(int argc, char *argv[])
                     pwmbuffer[i/12][i%12] = 0x00;
                 }
             }
-
-            lines(pwmbuffer);
+            std::thread write(lines,pwmbuffer);
+            while (last + ((delay)*deg) > micros())
+            { // sleep between lines
+                if (readPin())
+                    went_back = true;        // we can now wait for the next edge
+                if (!readPin() && went_back) // we are still in the loop but we need to exit
+                    goto end;
+            } // sleep between lines
+            write.join();  
         }
     end:
         while (readPin())
