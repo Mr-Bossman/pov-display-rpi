@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     uint16_t zero[12] = {0};
     uint64_t delay = 0,last=0;
     bool went_back = true;
+    std::thread bruhwhy[2];
     while (1)
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
             if((deg/(degreesIn/4))%2){
                 for (uint8_t i = 0; i < 72; i++)
                 {
-                    pwmbuffer[i/12][i%12] = 0xff;
+                    pwmbuffer[i/12][i%12] = 0xffff;
                 }
             } else {
                 for (uint8_t i = 0; i < 72; i++)
@@ -57,7 +58,11 @@ int main(int argc, char *argv[])
                     pwmbuffer[i/12][i%12] = 0x00;
                 }
             }
-            std::thread write(lines,pwmbuffer);
+            if(bruhwhy[0].joinable())
+                bruhwhy[0] = std::thread(lines,pwmbuffer);
+            else
+                bruhwhy[1] = std::thread(lines,pwmbuffer);
+
             while (last + ((delay)*deg) > micros())
             { // sleep between lines
                 if (readPin())
@@ -65,7 +70,6 @@ int main(int argc, char *argv[])
                 if (!readPin() && went_back) // we are still in the loop but we need to exit
                     goto end;
             } // sleep between lines
-            write.join();  
         }
     end:
         while (readPin())
