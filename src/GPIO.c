@@ -74,6 +74,18 @@ static int GPIODirection(int pin, int dir)
 
 extern int GPIORead(int pin)
 {
+    #define VALUE_MAX 30
+	char path[VALUE_MAX];
+
+	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
+	fd = open(path, O_RDWR);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open gpio value for reading!\n");
+		return(-3);
+	}
+    
+
+    
     char value_str[3];
 	if (-1 == read(fd, value_str, 3)) {
 		fprintf(stderr, "Failed to read value!\n");
@@ -84,6 +96,18 @@ extern int GPIORead(int pin)
 }
 extern int GPIOWrite(int pin, int value)
 {
+    #define VALUE_MAX 30
+	char path[VALUE_MAX];
+
+	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
+	fd = open(path, O_RDWR);
+	if (-1 == fd) {
+		fprintf(stderr, "Failed to open gpio value for reading!\n");
+		return(-3);
+	}
+    
+
+
 	static const char s_values_str[] = "01";
 
 	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
@@ -100,19 +124,9 @@ extern int GPIOClose(int pin)
 }
 extern int GPIOInit(int pin,int dir)
 {
-    if (-1 == GPIOExport(POUT) || -1 == GPIOExport(PIN))
+    if (-1 == GPIOExport(pin))
 	    return(-1);
     if (-1 == GPIODirection(POUT, dir) || -1 == GPIODirection(PIN, dir))
 	   	return(-2);
-    
-    #define VALUE_MAX 30
-	char path[VALUE_MAX];
-
-	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, O_RDWR);
-	if (-1 == fd) {
-		fprintf(stderr, "Failed to open gpio value for reading!\n");
-		return(-3);
-	}
     return 0;
 }
