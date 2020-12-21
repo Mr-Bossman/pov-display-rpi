@@ -8,7 +8,7 @@
 
 // Access from ARM Running Linux
 
-#define BCM2708_PERI_BASE        0x20000000
+#define BCM2708_PERI_BASE        0xFE000000
 #define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
 
@@ -44,10 +44,10 @@ extern int GPIORead(int pin){
 	return GET_GPIO(pin);
 }
 extern void GPIOPinmode(int pin,int dir){
-	if(dir)
-	OUT_GPIO(pin);
-	else
 	INP_GPIO(pin);
+	if(dir)
+		OUT_GPIO(pin);
+	
 }
 extern int GPIOInit()
 {

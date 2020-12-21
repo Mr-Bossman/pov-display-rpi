@@ -10,7 +10,7 @@ const uint16_t lester[360][72] = {17688,17160,18224,22499,19320,19320,23715,1512
 
 inline static int readPin()
 {
-       return GPIORead(1);
+       return GPIORead(0);
 
 }
 uint64_t micros()
@@ -28,7 +28,7 @@ void getDelay(uint64_t &delay, uint64_t &last);
 int main(int argc, char *argv[])
 {
     GPIOInit();
-    GPIOPinmode(1,IN);
+    GPIOPinmode(0,IN);
     tlc59711_init("/dev/spidev0.1");
     uint16_t pwmbuffer[chips][12];
     uint16_t zero[12] = {0};
