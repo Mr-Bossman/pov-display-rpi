@@ -45,14 +45,25 @@ int main(int argc, char *argv[])
                 if (!readPin() && went_back) // we are still in the loop but we need to exit
                     goto end;
             } // sleep between lines
-            for (uint8_t i = 0; i < 72; i++)
+            /*for (uint8_t i = 0; i < 72; i++)
             {
                 pwmbuffer[i/12][i%12] = lester[deg][i];
+        }*/
+            if((deg/(degreesIn/4))%2){
+                for (uint8_t i = 0; i < 72; i++)
+                {
+                    pwmbuffer[i/12][i%12] = 0xff;
+                }
+            } else {
+                for (uint8_t i = 0; i < 72; i++)
+                {
+                    pwmbuffer[i/12][i%12] = 0x00;
+                }
             }
+
             lines(pwmbuffer);
         }
     end:
-    tlc59711_send(zero);
         while (readPin())
             ; // wait till it goes low if we exited the loop early
         getDelay(delay, last);
