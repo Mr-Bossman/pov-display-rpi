@@ -91,6 +91,8 @@ extern int GPIORead(int pin)
 		fprintf(stderr, "Failed to read value!\n");
 		return(-1);
 	}
+    	close(fd);
+
 
 	return(atoi(value_str));
 }

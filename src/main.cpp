@@ -13,12 +13,12 @@ inline static int readPin()
        return GPIORead(1);
 
 }
-inline static struct timeval getTime()
+inline static uint64_t getTime()
 {
 
 struct timeval time;
 gettimeofday(&time, NULL);
-return time;
+return time.tv_usec;
 }
 
 
@@ -31,14 +31,13 @@ int main(int argc, char *argv[])
     GPIOInit(1,IN);
     tlc59711_init("/dev/spidev0.1");
     uint16_t pwmbuffer[chips][12];
-    uint64_t delay = 0;
-    struct timeval last ;
+    uint64_t delay = 0,last=0;
     bool went_back = true;
     while (1)
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
         { // go thorugh degrees
-            while (last.tv_usec + ((delay)*deg) > getTime().tv_usec)
+            while (last + ((delay)*deg) > getTime())
             { // sleep between lines
                 if (readPin())
                     went_back = true;        // we can now wait for the next edge
@@ -58,11 +57,11 @@ int main(int argc, char *argv[])
         went_back = false; //make shure we trigger on the rising edge
     }
 }
-void getDelay(uint64_t &delay, struct timeval &last)
+void getDelay(uint64_t &delay, uint64_t &last)
 {
-    struct timeval tmp = last;
+    uint64_t tmp = last;
     last = getTime();
-        delay = (tmp.tv_usec - last.tv_usec) / degreesIn;
+        delay = (tmp - last) / degreesIn;
 }
 void lines(uint16_t data[chips][12])
 {
