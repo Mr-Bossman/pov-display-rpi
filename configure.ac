@@ -1,10 +1,10 @@
-AC_INIT([my_program], [0.1])
+AC_INIT([pov], [0.1])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 AC_PROG_CXX
 AC_PROG_CC
 AC_LANG(C)
 AC_LANG(C++)
-AC_CONFIG_HEADERS([])
+AC_CONFIG_HEADERS([pov-config.h])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
