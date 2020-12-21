@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     uint64_t delay = 0,last=0;
     bool went_back = true;
     std::thread bruhwhy[2];
+    bruhwhy[0] = std::thread(lines,pwmbuffer);
+    bruhwhy[1] = std::thread(lines,pwmbuffer);
+
     while (1)
     { // main loop
         for (int deg = 0; deg < degreesIn; deg++)
@@ -67,13 +70,12 @@ int main(int argc, char *argv[])
                 }
             }
             if(bruhwhy[0].joinable()){
+                bruhwhy[0].join();
                 bruhwhy[0] = std::thread(lines,pwmbuffer);
-                bruhwhy[0].detach();
            } else if (bruhwhy[1].joinable()){
+                bruhwhy[0].join();
                 bruhwhy[1] = std::thread(lines,pwmbuffer);
-                bruhwhy[1].detach();
-           } else 
-                printf("bruh");
+           }
 
         }
     end:
@@ -81,6 +83,8 @@ int main(int argc, char *argv[])
             ; // wait till it goes low if we exited the loop early
         getDelay(delay, last);
         went_back = false; //make shure we trigger on the rising edge
+        printf("%llu\n",delay);
+
     }
 }
 void getDelay(uint64_t &delay, uint64_t &last)
