@@ -49,28 +49,17 @@ int main(int argc, char *argv[])
                 if (!readPin() && went_back) // we are still in the loop but we need to exit
                     goto end;
             } // sleep between lines
-                        if((deg/(degreesIn/4))%2){
-                for (uint8_t i = 0; i < 72; i++)
-                {
-                    pwmbuffer[i/12][i%12] = 0xffff;
-                }
-            } else {
-                for (uint8_t i = 0; i < 72; i++)
-                {
-                    pwmbuffer[i/12][i%12] = 0x00;
-                }
-            }
-            /*for (uint8_t i = 0; i < 72; i++)
+            for (uint8_t i = 0; i < 72; i++)
             {
                 pwmbuffer[i/12][i%12] = lester[deg][i];
-            }*/
+            }
             lines(pwmbuffer);
         }
     end:
         while (readPin()); // wait till it goes low if we exited the loop early
         getDelay(delay, last);
         went_back = false; //make shure we trigger on the rising edge
-        printf("%lu\n",delay);
+        printf("%llu\n",delay);
 
     }
 }

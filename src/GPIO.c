@@ -68,7 +68,7 @@ extern int GPIOInit()
    close(mem_fd); //No need to keep mem_fd open after mmap
 
    if (gpio_map == MAP_FAILED) {
-      printf("mmap error %lu\n", (uint64_t)gpio_map);//errno also set!
+      printf("mmap error %llu\n", (uint64_t)gpio_map);//errno also set!
       return -1;
    }
 
