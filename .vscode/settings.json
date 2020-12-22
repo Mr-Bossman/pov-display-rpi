@@ -9,6 +9,18 @@
         "limits": "cpp",
         "ostream": "cpp",
         "thread": "cpp",
-        "cstring": "c"
+        "cstring": "c",
+        "memory": "c",
+        "stop_token": "c",
+        "condition_variable": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "ranges": "c",
+        "utility": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "list": "c",
+        "string": "c",
+        "vector": "c"
     }
 }
