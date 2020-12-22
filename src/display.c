@@ -18,7 +18,7 @@ static uint64_t nanos()
 
 static uint16_t pwmbuffer[chips][12];
 
-static void lines(uint16_t data[chips][12]);
+static void lines(uint16_t line[chips*12]);
 
 static void getDelay(uint64_t *delay, uint64_t *last);
 
@@ -41,11 +41,8 @@ extern void display(bool *go, const uint16_t lester[3][degreesIn][chips * 12], b
                 if (!readPin() && went_back) // we are still in the loop but we need to exit
                     goto end;
             } // sleep between lines
-            for (uint8_t i = 0; i < chips * 12; i++)
-            {
-                pwmbuffer[i / 12][11 - (i % 12)] = lester[p][deg][i];
-            }
-            lines(pwmbuffer);
+
+            lines(lester[p][deg]);
         }
     end:
         while (readPin())
@@ -66,10 +63,15 @@ static void getDelay(uint64_t *delay, uint64_t *last)
     *last = nanos();
     *delay = (*last - tmp) / degreesIn;
 }
-static void lines(uint16_t line[chips][12])
+static void lines(uint16_t line[chips*12])
 {
-    uint8_t *data = (uint8_t *)malloc(chips * 28);
-    for (int i = 0; i < chips; i++)
-        tlc59711_create(line[i], data + (28 * i));
+    uint8_t data[chips*28];
+    uint8_t tmp[12];
+    for (int i = 0; i < chips; i++){
+                for(int b = 0; b < 12;b++)
+                tmp[11 - b] = line[i];
+
+        tlc59711_create(tmp, data + (28 * i));
+    }
     transfer(data, NULL, chips * 28);
 }
