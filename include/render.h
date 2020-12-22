@@ -5,15 +5,11 @@
 #include <iostream>
 #include <cmath>
 #ifndef chips
-    #define chips 2
-    #define degreesIn 360
+#define chips 2
+#define degreesIn 360
 #endif
-#define rings chips*12
+#define rings chips * 12
 
-#ifndef fits
-    #define fits true
-#endif
-
-extern int render(char *argv,bool *go,cv::Vec3b* buffer[degreesIn][rings]);
-extern int render16(char *argv,bool *go,uint16_t buf[3][degreesIn][rings],uint64_t fps, bool *swap);
+extern int render(char *argv, bool *go, cv::Vec3b *buffer[degreesIn][rings], bool fits);
+extern int render16(char *argv, bool *go, uint16_t buf[3][degreesIn][rings], uint64_t fps, bool *swap, bool fits);
 #endif
