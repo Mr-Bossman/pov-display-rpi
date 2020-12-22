@@ -98,9 +98,9 @@ extern int render16(char *argv, bool *go, uint16_t buffer[3][degreesIn][rings], 
 			for (int radius = 0; radius < rings; radius++)
 			{
 				int y = -(int)round(
-					cos(to_rad((double)d / (degreesIn / 360))) * radius);
-				int x = (int)round(
 					sin(to_rad((double)d / (degreesIn / 360))) * radius);
+				int x = -(int)round(
+					cos(to_rad((double)d / (degreesIn / 360))) * radius);
 				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
 					buffer[p][d][radius] = 0;
 				else
