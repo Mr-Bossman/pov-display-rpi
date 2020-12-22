@@ -1,6 +1,7 @@
 #include "opencv2/opencv.hpp"
 #include <iostream>
 #include <cmath>
+#include "common.h"
 #include "render.h"
 using namespace std;
 
@@ -49,12 +50,12 @@ static double to_rad(double degree) {
 	double pi = 3.14159265359;
 	return (degree * (pi / 180));
 }
-extern int render(char *argv,bool &go,cv::Vec3b buffer[degreesIn][rings]) {
+extern void render(char *argv,bool &go,cv::Vec3b buffer[degreesIn][rings]) {
 	cv::VideoCapture cap(argv);
 
 	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
-		return -1;
+	//	return -1;
 	}
 
 	while (go) {
@@ -113,5 +114,74 @@ extern int render(char *argv,bool &go,cv::Vec3b buffer[degreesIn][rings]) {
 	cap.release();
 	cv::destroyAllWindows();
 
-	return 0;
+	//return 0;
+}
+
+
+extern void render16(char *argv,bool &go,uint16_t buffer[degreesIn][rings]) {
+	cv::VideoCapture cap(argv);
+
+	if (!cap.isOpened()) {
+		cout << "Error opening video stream or file" << endl;
+		//return -1;
+	}
+
+	while (go) {
+
+		cv::Mat frame;
+		cap >> frame;
+		if (frame.empty())
+			break;
+		if (fits)
+			frame = crop(frame);
+		else
+			frame = fit(frame);
+
+
+		for (int d = 0; d < degreesIn; d++) {
+			for (int radius = 0; radius < rings; radius++) {
+				int y = -(int) round(
+						cos(to_rad((double) d / (degreesIn / 360))) * radius);
+				int x = (int) round(
+						sin(to_rad((double) d / (degreesIn / 360))) * radius);
+				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
+					buffer[d][radius] = 0;
+				else{
+					cv::Vec3b color = frame.at < cv::Vec3b> (x + frame.cols / 2, y + frame.rows / 2);
+					 buffer[d][radius] = (color[0] + color[1] + color[2])/3;
+				}
+			}
+		}
+		/*
+        Mat image = Mat(rings * 2, rings * 2, frame.type(), double(0));
+        for (int d = 0; d < degreesIn; d++) {
+			for (int radius = 0; radius < rings; radius++) {
+				int y = (int) round(
+						sin(to_rad((double) d / (degreesIn / 360))) * radius);
+				int x = -(int) round(
+						cos(to_rad((double) d / (degreesIn / 360))) * radius);
+				image.at < cv::Vec3b
+						> (Point(x + image.cols / 2, y + image.rows / 2)) =
+						buffer[d][radius];
+			}
+		}*/
+		/*for (int d = 0; d < degreesIn; d++) { // draw circumfince in white
+			int y = (int) round(sin(to_rad((double) d / (degreesIn / 360))) * rings);
+			int x = -(int) round(cos(to_rad((double) d / (degreesIn / 360))) * rings);
+			image.at < cv::Vec3b > (Point(x + image.cols / 2, y + image.rows / 2)) =
+					cv::Vec3b(255, 255, 255);
+		}*/
+
+		/*resize(image, image, Size(), 500 / (rings * 2), 500 / (rings * 2));
+		imshow("Frame", image);
+
+		char c = (char) waitKey(25);
+		if (c == 27)
+			break;*/
+	}
+
+	cap.release();
+	cv::destroyAllWindows();
+
+	//return 0;
 }
