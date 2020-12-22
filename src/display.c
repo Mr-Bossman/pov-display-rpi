@@ -26,7 +26,7 @@ static void lines(uint16_t data[chips][12]);
 
 static void getDelay(uint64_t* delay, uint64_t* last);
 
-extern void display(bool* go,const uint16_t lester[degreesIn][chips*12]){
+extern void display(bool* go,const uint16_t lester[degreesIn][chips*12],uint64_t* d){
     GPIOInit();
     GPIOPinmode(0,IN);
     tlc59711_init("/dev/spidev0.1");
@@ -54,6 +54,7 @@ extern void display(bool* go,const uint16_t lester[degreesIn][chips*12]){
         while (readPin()); // wait till it goes low if we exited the loop early
         getDelay(&delay, &last);
         went_back = false; //make shure we trigger on the rising edge
+        *d = delay
         printf("%llu\n",delay);
 
     }

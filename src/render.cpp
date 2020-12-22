@@ -124,7 +124,7 @@ extern int render(char *argv,bool *go,cv::Vec3b buffer[degreesIn][rings]) {
 }
 
 
-extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint64_t fps) {
+extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint64_t fps,uint64_t *delay) {
 	cv::VideoCapture cap(argv);
     uint64_t delay = 0,last=0;
 
@@ -132,7 +132,7 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint
 		cout << "Error opening video stream or file" << endl;
 		return -1;
 	}
-	delay = 1000000000/fps;
+	//delay = 1000000000/fps;
 
 	while (*go) {
 
@@ -145,7 +145,7 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint
 		else
 			frame = fit(frame);
 
-		while(last + delay > nanos());
+		while(last + *delay > nanos());
 		last = nanos();
 		for (int d = 0; d < degreesIn; d++) {
 			for (int radius = 0; radius < rings; radius++) {
