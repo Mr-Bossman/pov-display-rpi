@@ -67,7 +67,7 @@ static void lines(const uint16_t line[chips*12])
     uint16_t tmp[12];
     for (int i = 0; i < chips; i++){
                 for(int b = 0; b < 12;b++)
-                tmp[11 - b] = line[i];
+                tmp[11 - b] = line[(i*12)+b];
 
         tlc59711_create(tmp, data + (28 * i));
     }
