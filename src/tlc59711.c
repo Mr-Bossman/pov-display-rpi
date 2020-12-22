@@ -8,7 +8,7 @@ extern int tlc59711_init(const char *device)
     spiMode modes = {
         .mode = 0,
         .bits = 8,
-        .speed = 12000000,
+        .speed = 18000000,
         .delay = 0};
 
     int fd = spi_init(&modes, device);
