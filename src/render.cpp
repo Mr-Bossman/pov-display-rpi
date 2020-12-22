@@ -5,6 +5,12 @@
 #include "render.h"
 using namespace std;
 
+static uint64_t nanos()
+{
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    return ((uint64_t) now.tv_sec) * 1000000000 + ((uint64_t) now.tv_nsec);
+}
 static cv::Mat fit(const cv::Mat &img) {
 	cv::Mat out;
 	int width = img.cols;
@@ -118,13 +124,15 @@ extern int render(char *argv,bool *go,cv::Vec3b buffer[degreesIn][rings]) {
 }
 
 
-extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings]) {
+extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint64_t fps) {
 	cv::VideoCapture cap(argv);
+    uint64_t delay = 0,last=0;
 
 	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
 		return -1;
 	}
+	delay = 1000000000/fps;
 
 	while (*go) {
 
@@ -137,7 +145,8 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings]) {
 		else
 			frame = fit(frame);
 
-
+		while(last + delay > nanos());
+		last = nanos();
 		for (int d = 0; d < degreesIn; d++) {
 			for (int radius = 0; radius < rings; radius++) {
 				int y = -(int) round(
