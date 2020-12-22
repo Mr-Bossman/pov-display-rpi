@@ -14,6 +14,6 @@
     #define fits true
 #endif
 
-extern void render(char *argv,bool *go,cv::Vec3b* buffer[degreesIn][rings]);
-extern void render16(char *argv,bool *go,uint16_t buf[degreesIn][rings]);
+extern int render(char *argv,bool *go,cv::Vec3b* buffer[degreesIn][rings]);
+extern int render16(char *argv,bool *go,uint16_t buf[degreesIn][rings]);
 #endif
