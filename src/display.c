@@ -16,9 +16,7 @@ static uint64_t nanos()
     return ((uint64_t)now.tv_sec) * 1000000000 + ((uint64_t)now.tv_nsec);
 }
 
-static uint16_t pwmbuffer[chips][12];
-
-static void lines(uint16_t line[chips*12]);
+static void lines(const uint16_t line[chips*12]);
 
 static void getDelay(uint64_t *delay, uint64_t *last);
 
@@ -63,10 +61,10 @@ static void getDelay(uint64_t *delay, uint64_t *last)
     *last = nanos();
     *delay = (*last - tmp) / degreesIn;
 }
-static void lines(uint16_t line[chips*12])
+static void lines(const uint16_t line[chips*12])
 {
     uint8_t data[chips*28];
-    uint8_t tmp[12];
+    uint16_t tmp[12];
     for (int i = 0; i < chips; i++){
                 for(int b = 0; b < 12;b++)
                 tmp[11 - b] = line[i];
