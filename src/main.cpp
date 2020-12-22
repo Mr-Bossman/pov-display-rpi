@@ -1,6 +1,3 @@
-#define chips 2
-#define degreesIn 360
-
 #include "common.h"
 #include <iostream> // std::cout
 #include <thread>   // std::thread

@@ -4,3 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
+#define chips 6
+#define degreesIn 360

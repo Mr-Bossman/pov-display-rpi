@@ -43,7 +43,7 @@ extern void display(bool *go, const uint16_t lester[3][degreesIn][chips * 12], b
             } // sleep between lines
             for (uint8_t i = 0; i < chips * 12; i++)
             {
-                pwmbuffer[(chips - 1) - (i / 12)][11 - (i % 12)] = lester[p][deg][i];
+                pwmbuffer[i / 12][11 - (i % 12)] = lester[p][deg][i];
             }
             lines(pwmbuffer);
         }
