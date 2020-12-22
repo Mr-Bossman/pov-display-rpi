@@ -124,15 +124,15 @@ extern int render(char *argv,bool *go,cv::Vec3b buffer[degreesIn][rings]) {
 }
 
 
-extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint64_t fps,uint64_t *delay) {
+extern int render16(char *argv,bool *go,uint16_t buffer[3][degreesIn][rings] ,uint64_t fps,bool *swap) {
 	cv::VideoCapture cap(argv);
-    uint64_t delay = 0,last=0;
-
+    uint64_t last=0;
+	uint64_t delay = 1000000000/fps;
+	int p = 2;
 	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
 		return -1;
 	}
-	//delay = 1000000000/fps;
 
 	while (*go) {
 
@@ -145,8 +145,8 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint
 		else
 			frame = fit(frame);
 
-		while(last + *delay > nanos());
-		last = nanos();
+		while(last + delay > nanos());
+               last = nanos();
 		for (int d = 0; d < degreesIn; d++) {
 			for (int radius = 0; radius < rings; radius++) {
 				int y = -(int) round(
@@ -154,13 +154,20 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings] , uint
 				int x = (int) round(
 						sin(to_rad((double) d / (degreesIn / 360))) * radius);
 				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
-					buffer[d][radius] = 0;
+					buffer[p][d][radius] = 0;
 				else{
 					cv::Vec3b color = frame.at < cv::Vec3b> (x + frame.cols / 2, y + frame.rows / 2);
-					 buffer[d][radius] = ((((uint16_t)color[0]) + ((uint16_t)color[0]) + ((uint16_t)color[0]))/3ul) << 8;
+					 buffer[p][d][radius] = ((((uint16_t)color[0]) + ((uint16_t)color[0]) + ((uint16_t)color[0]))/3ul) << 8;
 				}
 			}
 		}
+			if(*swap){
+				if(p == 2)
+					p = 0;
+				else 
+					p++;
+				*swap = false;
+			}
 		/*
         Mat image = Mat(rings * 2, rings * 2, frame.type(), double(0));
         for (int d = 0; d < degreesIn; d++) {

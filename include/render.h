@@ -15,5 +15,5 @@
 #endif
 
 extern int render(char *argv,bool *go,cv::Vec3b* buffer[degreesIn][rings]);
-extern int render16(char *argv,bool *go,uint16_t buf[degreesIn][rings],uint64_t fps,uint64_t *delay);
+extern int render16(char *argv,bool *go,uint16_t buf[3][degreesIn][rings],uint64_t fps, bool *swap);
 #endif

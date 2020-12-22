@@ -11,9 +11,10 @@
 int main(int argc, char *argv[])
 {
     bool go = true;
-    uint64_t delay =0;
-    uint16_t buffer[degreesIn][rings] = {0};
-    std::thread dis(display,&go,buffer,&delay);
-    std::thread ren(render16,argv[1],&go,buffer,std::stoi(argv[2]),&delay);
+    bool swap = false;
+    uint16_t buffer[3][degreesIn][rings] = {0};
+
+    std::thread dis(display,&go,buffer,&swap);
+    std::thread ren(render16,argv[1],&go,buffer,std::stoi(argv[2]),&swap);
     while(1){}
 }
