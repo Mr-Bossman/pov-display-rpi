@@ -50,15 +50,15 @@ static double to_rad(double degree) {
 	double pi = 3.14159265359;
 	return (degree * (pi / 180));
 }
-extern void render(char *argv,bool &go,cv::Vec3b buffer[degreesIn][rings]) {
+extern int render(char *argv,bool *go,cv::Vec3b buffer[degreesIn][rings]) {
 	cv::VideoCapture cap(argv);
 
 	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
-	//	return -1;
+		return -1;
 	}
 
-	while (go) {
+	while (*go) {
 
 		cv::Mat frame;
 		cap >> frame;
@@ -114,19 +114,19 @@ extern void render(char *argv,bool &go,cv::Vec3b buffer[degreesIn][rings]) {
 	cap.release();
 	cv::destroyAllWindows();
 
-	//return 0;
+	return 0;
 }
 
 
-extern void render16(char *argv,bool &go,uint16_t buffer[degreesIn][rings]) {
+extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings]) {
 	cv::VideoCapture cap(argv);
 
 	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
-		//return -1;
+		return -1;
 	}
 
-	while (go) {
+	while (*go) {
 
 		cv::Mat frame;
 		cap >> frame;
@@ -183,5 +183,5 @@ extern void render16(char *argv,bool &go,uint16_t buffer[degreesIn][rings]) {
 	cap.release();
 	cv::destroyAllWindows();
 
-	//return 0;
+	return 0;
 }
