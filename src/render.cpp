@@ -148,7 +148,7 @@ extern int render16(char *argv,bool *go,uint16_t buffer[degreesIn][rings]) {
 					buffer[d][radius] = 0;
 				else{
 					cv::Vec3b color = frame.at < cv::Vec3b> (x + frame.cols / 2, y + frame.rows / 2);
-					 buffer[d][radius] = (color[0] + color[1] + color[2])/3;
+					 buffer[d][radius] = ((((uint16_t)color[0]) + ((uint16_t)color[0]) + ((uint16_t)color[0]))/3ul) << 8;
 				}
 			}
 		}
