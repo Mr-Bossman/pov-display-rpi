@@ -53,10 +53,10 @@ extern void display(bool *go, const uint16_t lester[3][degreesIn][chips * 12], b
         getDelay(&delay, &last);
         went_back = false; //make shure we trigger on the rising edge
         printf("%llu\n", delay);
-		if(p == 2)
-			p = 0;
-		else 
-			p++;
+        if (p == 2)
+            p = 0;
+        else
+            p++;
         *swap = true;
     }
 }

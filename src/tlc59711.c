@@ -13,17 +13,18 @@ extern int tlc59711_init(const char *device)
 
     int fd = spi_init(&modes, device);
     return fd;
-} 
+}
 
-extern void tlc59711_create(const uint16_t data[12],uint8_t output[28])
+extern void tlc59711_create(const uint16_t data[12], uint8_t output[28])
 {
-    memcpy(output,command,4);
+    memcpy(output, command, 4);
     // 12 channels per TLC59711
-    for (int8_t c = 11; c >= 0; c--) {
+    for (int8_t c = 11; c >= 0; c--)
+    {
 
         // 16 bits per channel, send MSB first
-        output[(c << 1)+4] = data[c] >> 8;
-        output[((c<< 1)+1)+4] = data[c];
+        output[(c << 1) + 4] = data[c] >> 8;
+        output[((c << 1) + 1) + 4] = data[c];
     }
 }
 
