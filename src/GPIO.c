@@ -1,13 +1,3 @@
-//
-//  How to access GPIO registers from C-code on the Raspberry-Pi
-//  Example program
-//  15-January-2012
-//  Dom and Gert
-//  Revised: 15-Feb-2013
-
-
-// Access from ARM Running Linux
-
 #define BCM2708_PERI_BASE        0xFE000000
 #define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
@@ -19,8 +9,8 @@
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
 
-int  mem_fd;
-void *gpio_map;
+static int  mem_fd;
+static void *gpio_map;
 
 // I/O access
 volatile unsigned *gpio;
@@ -45,7 +35,6 @@ extern void GPIOPinmode(int pin,int dir){
 	INP_GPIO(pin);
 	if(dir)
 		OUT_GPIO(pin);
-	
 }
 extern int GPIOInit()
 {
@@ -75,4 +64,7 @@ extern int GPIOInit()
    // Always use volatile pointer!
    gpio = (volatile unsigned *)gpio_map;
 	return 0;
+}
+extern int unmapG(){
+   return munmap(gpio_map,BLOCK_SIZE);
 }

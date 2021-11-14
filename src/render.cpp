@@ -60,10 +60,9 @@ static cv::Mat crop(const cv::Mat &img)
 	}
 	return out(crop);
 }
-static double to_rad(double degree)
+static inline double to_rad(double degree)
 {
-	double pi = 3.14159265359;
-	return (degree * (pi / 180));
+	return (degree * (M_PI / 180));
 }
 
 extern int render16(char *argv, bool *go, uint16_t buffer[3][degreesIn][rings], uint64_t fps, bool *swap, bool fits)

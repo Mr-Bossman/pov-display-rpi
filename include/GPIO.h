@@ -7,5 +7,5 @@
 extern int GPIORead(int pin);
 extern void GPIOPinmode(int pin, int dir);
 extern int GPIOInit();
-
+extern int unmapG();
 #endif
