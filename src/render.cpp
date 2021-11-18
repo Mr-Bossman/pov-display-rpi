@@ -104,8 +104,8 @@ extern int render16(char *argv, bool *go, uint16_t buffer[3][degreesIn][rings], 
 					buffer[p][d][radius] = 0;
 				else
 				{
-					cv::Vec3b color = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2);
-					buffer[p][d][radius] = ((((uint16_t)color[0]) + ((uint16_t)color[0]) + ((uint16_t)color[0])) / 3ul) << 8;
+					cv::Vec3b color = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2)*radius;
+					buffer[p][d][radius] = ((((uint32_t)color[0]) + ((uint32_t)color[0]) + ((uint32_t)color[0]))*(UINT16_MAX/UINT8_MAX))/((rings)*3);
 				}
 			}
 		}
@@ -168,7 +168,7 @@ extern int render(char *argv, bool *go, cv::Vec3b buffer[degreesIn][rings], bool
 				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
 					buffer[d][radius] = 0;
 				else
-					buffer[d][radius] = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2);
+					buffer[d][radius] = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2) * radius;
 			}
 		}
 		/*
