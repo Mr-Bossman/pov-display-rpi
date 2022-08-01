@@ -83,9 +83,9 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 		for (int d = 0; d < DEGREESIN; d++) {
 			for (int radius = 0; radius < RINGS; radius++) {
 				int y = -(int)round(
-					sin(to_rad((double)d / (DEGREESIN / 360))) * radius);
+					sin(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
 				int x = -(int)round(
-					cos(to_rad((double)d / (DEGREESIN / 360))) * radius);
+					cos(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
 				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
 					buffer[p][d][radius] = 0;
 				else {
@@ -129,9 +129,9 @@ int render(char *argv, bool *go, cv::Vec3b buffer[DEGREESIN][RINGS], bool fits) 
 		for (int d = 0; d < DEGREESIN; d++) {
 			for (int radius = 0; radius < RINGS; radius++) {
 				int y = -(int)round(
-					sin(to_rad((double)d / (DEGREESIN / 360))) * radius);
+					sin(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
 				int x = -(int)round(
-					cos(to_rad((double)d / (DEGREESIN / 360))) * radius);
+					cos(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
 				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
 					buffer[d][radius] = 0;
 				else

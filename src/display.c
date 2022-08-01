@@ -22,7 +22,7 @@ static uint64_t nanos() {
 }
 
 void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *swap) {
-	cpu_set_t cpuset; 
+	cpu_set_t cpuset;
 	CPU_ZERO(&cpuset);       //clears the cpuset
 	CPU_SET(0, &cpuset); //set CPU 2 on cpuse
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
@@ -39,20 +39,20 @@ void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *sw
 					went_back = true; // we can now wait for the next edge
 				if (!readPin() && went_back) // we are still in the loop but we need to exit
 					goto end;
-		} // sleep between lines
-		lines(lester[p][deg]);
-	}
-	end:
-	while (readPin()); // wait till it goes low if we exited the loop early
-	getDelay(&delay, &last);
-	went_back = false; // make shure we trigger on the rising edge
-	if (!(*swap)) {
-		if (p == 2)
-			p = 0;
-		else
-			p++;
-		*swap = true;
-	}
+			} // sleep between lines
+			lines(lester[p][deg]);
+		}
+		end:
+		while (readPin()&&*go); // wait till it goes low if we exited the loop early
+		getDelay(&delay, &last);
+		went_back = false; // make shure we trigger on the rising edge
+		if (!(*swap)) {
+			if (p == 2)
+				p = 0;
+			else
+				p++;
+			*swap = true;
+		}
   }
 }
 
