@@ -1,6 +1,6 @@
 #include "common.h"
-#include <iostream> // std::cout
-#include <thread>   // std::thread
+#include <iostream>
+#include <thread>
 #include <signal.h>
 #include "display.h"
 #include "GPIO.h"
@@ -8,7 +8,8 @@
 #include "spi.h"
 
 static bool go = true;
-void sigm(int sig){
+
+void sigm(int sig) {
     go = false;
 }
 
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
     bool swap = false;
-    uint16_t buffer[3][degreesIn][rings] = {0};
+    uint16_t buffer[3][DEGREESIN][RINGS] = {0};
 
     std::thread dis(display, &go, buffer, &swap);
     render16(argv[1], &go, buffer, std::stoi(argv[2]), &swap,(std::stoi(argv[3]))?true:false);

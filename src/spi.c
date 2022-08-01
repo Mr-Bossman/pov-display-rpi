@@ -4,12 +4,15 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
-static spiMode _mode;
 
+static spiMode _mode;
 static int fd;
 
-extern int transfer(uint8_t tx[], uint8_t rx[], unsigned int size)
-{
+void spi_deinit() {
+	close(fd);
+}
+
+int transfer(uint8_t tx[], uint8_t rx[], unsigned int size) {
 	int ret;
 	struct spi_ioc_transfer tr = {
 		.tx_buf = (unsigned long)tx,
@@ -24,49 +27,42 @@ extern int transfer(uint8_t tx[], uint8_t rx[], unsigned int size)
 		printf("can't send spi message\n");
 	return ret;
 }
-extern int spi_init(spiMode *modes, const char *device)
-{
+
+int spi_init(spiMode *modes, const char *device) {
 	_mode = *modes;
 	int ret;
 	fd = open(device, O_RDWR);
-	if (fd < 0)
-	{
+	if (fd < 0) {
 		printf("could not open %s\n", device);
 		return fd;
 	}
 	ret = ioctl(fd, SPI_IOC_WR_MODE, &(modes->mode));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't set spi mode\n");
 		return ret;
 	}
 	ret = ioctl(fd, SPI_IOC_RD_MODE, &(modes->mode));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't get spi mode\n");
 		return ret;
 	}
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &(modes->bits));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't set bits per word\n");
 		return ret;
 	}
 	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &(modes->bits));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't get bits per word\n");
 		return ret;
 	}
 	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &(modes->speed));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't set max speed hz\n");
 		return ret;
 	}
 	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &(modes->speed));
-	if (ret == -1)
-	{
+	if (ret == -1) {
 		printf("can't get max speed hz\n");
 		return ret;
 	}
@@ -74,8 +70,4 @@ extern int spi_init(spiMode *modes, const char *device)
 	printf("bits per word: %d\n", modes->bits);
 	printf("max speed: %d Hz (%d KHz)\n", modes->speed, modes->speed / 1000);
 	return fd;
-}
-extern void spi_deinit()
-{
-	close(fd);
 }

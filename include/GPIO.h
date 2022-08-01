@@ -4,8 +4,9 @@
 #define IN 0
 #define OUT 1
 
-extern int GPIORead(int pin);
-extern void GPIOPinmode(int pin, int dir);
-extern int GPIOInit();
-extern int unmapG();
+int GPIORead(int pin);
+void GPIOPinmode(int pin, int dir);
+int GPIOInit();
+int unmapG();
+
 #endif

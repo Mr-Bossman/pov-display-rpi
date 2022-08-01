@@ -1,12 +1,9 @@
-#define BCM2708_PERI_BASE        0xFE000000
-#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
-
-
 #include "common.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#define PAGE_SIZE (4*1024)
+#define BCM2708_PERI_BASE        0xFE000000
+#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 #define BLOCK_SIZE (4*1024)
 
 static int  mem_fd;
@@ -28,43 +25,46 @@ volatile unsigned *gpio;
 
 #define GPIO_PULL *(gpio+37) // Pull up/pull down
 #define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
-extern int GPIORead(int pin){
+
+int GPIORead(int pin){
 	return GET_GPIO(pin);
 }
-extern void GPIOPinmode(int pin,int dir){
+
+void GPIOPinmode(int pin,int dir){
 	INP_GPIO(pin);
 	if(dir)
 		OUT_GPIO(pin);
 }
-extern int GPIOInit()
-{
-   /* open /dev/mem */
-   if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
-      printf("can't open /dev/mem \n");
-      return -1;
-   }
 
-   /* mmap GPIO */
-   gpio_map = mmap(
-      NULL,             //Any adddress in our space will do
-      BLOCK_SIZE,       //Map length
-      PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
-      MAP_SHARED,       //Shared with other processes
-      mem_fd,           //File to map
-      GPIO_BASE         //Offset to GPIO peripheral
-   );
-
-   close(mem_fd); //No need to keep mem_fd open after mmap
-
-   if (gpio_map == MAP_FAILED) {
-      printf("mmap error %llu\n", (uint64_t)gpio_map);//errno also set!
-      return -1;
-   }
-
-   // Always use volatile pointer!
-   gpio = (volatile unsigned *)gpio_map;
-	return 0;
+int unmapG(){
+	return munmap(gpio_map,BLOCK_SIZE);
 }
-extern int unmapG(){
-   return munmap(gpio_map,BLOCK_SIZE);
+
+int GPIOInit()
+{
+	/* open /dev/mem */
+	if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
+		printf("can't open /dev/mem \n");
+		return -1;
+	}
+
+	/* mmap GPIO */
+	gpio_map = mmap(
+		NULL,             //Any adddress in our space will do
+		BLOCK_SIZE,       //Map length
+		PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
+		MAP_SHARED,       //Shared with other processes
+		mem_fd,           //File to map
+		GPIO_BASE         //Offset to GPIO peripheral
+	);
+	close(mem_fd); //No need to keep mem_fd open after mmap
+
+	if (gpio_map == MAP_FAILED) {
+		printf("mmap error %lu\n", (uint64_t)gpio_map);//errno also set!
+		return -1;
+	}
+
+	// Always use volatile pointer!
+	gpio = (volatile unsigned *)gpio_map;
+	return 0;
 }
