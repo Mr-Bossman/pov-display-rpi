@@ -53,7 +53,9 @@ void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *sw
 				p++;
 			*swap = true;
 		}
-  }
+    }
+    unmapG();
+    spi_deinit();
 }
 
 static void getDelay(uint64_t *delay, uint64_t *last) {

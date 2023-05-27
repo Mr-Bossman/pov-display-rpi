@@ -16,8 +16,12 @@ void sigm(int sig) {
 int main(int argc, char *argv[])
 {
     signal(SIGINT, sigm);
+    if(argc < 1) {
+        printf("argv must have program name!\n");
+        exit(-1);  
+    }
     if(argc != 4){
-        printf("./exe (pathto video file) (fps) (fit type)\n \"(\" isnt included (fps) and (fit type) is an int");
+        printf("%s (path to video file) (fps) (fit type)\n",argv[0]);
         exit(-1);
     }
     bool swap = false;
@@ -26,7 +30,5 @@ int main(int argc, char *argv[])
     std::thread dis(display, &go, buffer, &swap);
     render16(argv[1], &go, buffer, std::stoi(argv[2]), &swap,(std::stoi(argv[3]))?true:false);
     dis.join();
-    unmapG();
-    spi_deinit();
     return 0;
 }
