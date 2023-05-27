@@ -23,7 +23,7 @@ static uint64_t nanos() {
 
 void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *swap) {
 	cpu_set_t cpuset;
-	CPU_ZERO(&cpuset);       //clears the cpuset
+	CPU_ZERO(&cpuset); //clears the cpuset
 	CPU_SET(0, &cpuset); //set CPU 2 on cpuse
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
 	GPIOInit();
@@ -32,7 +32,7 @@ void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *sw
 	uint64_t delay = 0, last = 0;
 	bool went_back = false;
 	int p = 0;
-	while (*go) {                                 // main loop
+	while (*go) { // main loop
 		for (int deg = 0; deg < DEGREESIN; deg++) { // go thorugh degrees
 			while (last + ((delay)*deg) > nanos()) {  // sleep between lines
 				if (readPin())
@@ -53,9 +53,9 @@ void display(bool *go, const uint16_t lester[3][DEGREESIN][CHIPS * 12], bool *sw
 				p++;
 			*swap = true;
 		}
-    }
-    unmapG();
-    spi_deinit();
+	}
+	unmapG();
+	spi_deinit();
 }
 
 static void getDelay(uint64_t *delay, uint64_t *last) {
