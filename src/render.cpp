@@ -57,11 +57,25 @@ static inline double to_rad(double degree) {
 	return (degree * (M_PI / 180));
 }
 
+static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &frame,int frame_buf_num) {
+	for (int d = 0; d < DEGREESIN; d++)
+	for (int radius = 0; radius < RINGS; radius++) {
+		int y = -(int)round(sin(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
+		int x = -(int)round(cos(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
+		if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2) {
+			buffer[frame_buf_num][d][radius] = 0;
+			continue;
+		}
+		cv::Vec3b color = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2)*radius;
+		buffer[frame_buf_num][d][radius] = ((((uint32_t)color[0]) + ((uint32_t)color[1]) + ((uint32_t)color[2]))*(UINT16_MAX/UINT8_MAX)*radius)/((RINGS-1)*3);
+	}
+}
+
 int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_t fps, bool *swap, bool fits) {
 	cv::VideoCapture cap(argv);
 	uint64_t last = 0;
 	uint64_t delay = 1000000000 / fps;
-	int p = 2;
+	int frame_buf_num = 2;
 	if (!cap.isOpened()) {
 		std::cout << "Error opening video stream or file" << std::endl;
 		return -1;
@@ -80,25 +94,12 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 
 		while (last + delay > nanos());
 		last = nanos();
-		for (int d = 0; d < DEGREESIN; d++) {
-			for (int radius = 0; radius < RINGS; radius++) {
-				int y = -(int)round(
-					sin(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
-				int x = -(int)round(
-					cos(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
-				if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2)
-					buffer[p][d][radius] = 0;
-				else {
-					cv::Vec3b color = frame.at<cv::Vec3b>(x + frame.cols / 2, y + frame.rows / 2)*radius;
-					buffer[p][d][radius] = ((((uint32_t)color[0]) + ((uint32_t)color[1]) + ((uint32_t)color[2]))*(UINT16_MAX/UINT8_MAX)*radius)/((RINGS-1)*3);
-				}
-			}
-		}
+		fill_buffer(buffer,frame,frame_buf_num);
 		if (*swap) {
-			if (p == 2)
-				p = 0;
+			if (frame_buf_num == 2)
+				frame_buf_num = 0;
 			else
-				p++;
+				frame_buf_num++;
 			*swap = false;
 		}
 	}
