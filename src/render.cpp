@@ -57,11 +57,27 @@ static inline double to_rad(double degree) {
 	return (degree * (M_PI / 180));
 }
 
-static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &frame,int frame_buf_num) {
+static inline size_t rad_index(size_t deg,size_t rad) {
+	return ((deg*RINGS) + rad);
+}
+
+static cv::Vec2i* compute_cartesian2polarLUT(void) {
+	cv::Vec2i* C2P_LUT = new cv::Vec2i[DEGREESIN*RINGS];
 	for (int d = 0; d < DEGREESIN; d++)
 	for (int radius = 0; radius < RINGS; radius++) {
-		int y = -(int)round(sin(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
-		int x = -(int)round(cos(to_rad((double)d / ((double)DEGREESIN / 360))) * radius);
+		int x = -(int)round(cos(to_rad((double)d / ((double)DEGREESIN / 360.0))) * radius);
+		int y = -(int)round(sin(to_rad((double)d / ((double)DEGREESIN / 360.0))) * radius);
+		C2P_LUT[rad_index(d,radius)] = cv::Vec2i(x,y);
+	}
+	return C2P_LUT;
+}
+
+static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &frame,int frame_buf_num,cv::Vec2i* C2P_LUT) {
+	for (int d = 0; d < DEGREESIN; d++)
+	for (int radius = 0; radius < RINGS; radius++) {
+		auto tmp = C2P_LUT[rad_index(d,radius)];
+		int x = tmp[0];
+		int y = tmp[1];
 		if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2) {
 			buffer[frame_buf_num][d][radius] = 0;
 			continue;
@@ -76,6 +92,7 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 	uint64_t last = 0;
 	uint64_t delay = 1000000000 / fps;
 	int frame_buf_num = 2;
+	cv::Vec2i* C2P_LUT = nullptr;
 	if (!cap.isOpened()) {
 		std::cout << "Error opening video stream or file" << std::endl;
 		return -1;
@@ -91,10 +108,12 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 			frame = crop(frame);
 		else
 			frame = fit(frame);
+		if(C2P_LUT == nullptr)
+			C2P_LUT = compute_cartesian2polarLUT();
 
 		while (last + delay > nanos());
 		last = nanos();
-		fill_buffer(buffer,frame,frame_buf_num);
+		fill_buffer(buffer,frame,frame_buf_num,C2P_LUT);
 		if (*swap) {
 			if (frame_buf_num == 2)
 				frame_buf_num = 0;
@@ -103,7 +122,7 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 			*swap = false;
 		}
 	}
-
+	delete[] C2P_LUT;
 	cap.release();
 	cv::destroyAllWindows();
 	return 0;
