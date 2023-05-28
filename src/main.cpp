@@ -10,6 +10,7 @@
 static bool go = true;
 
 void sigm(int sig) {
+	(void) sig;
 	go = false;
 }
 

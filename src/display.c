@@ -1,11 +1,13 @@
+#define _GNU_SOURCE
+#include "common.h"
+#include <time.h>
+#include <pthread.h>
+#include <sched.h>
 #include "display.h"
 #include "GPIO.h"
-#include "common.h"
 #include "spi.h"
 #include "tlc59711.h"
-#include <time.h>
-#include <sched.h>
-#include <pthread.h>
+
 
 static void lines(const uint16_t line[CHIPS * 12]);
 
