@@ -121,6 +121,9 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 				frame_buf_num++;
 			*swap = false;
 		}
+#ifdef DESKTOP_TEST
+		std::cout << "\rframe_time: " << nanos()-last << "ns    " << std::flush;
+#endif
 	}
 	delete[] C2P_LUT;
 	cap.release();

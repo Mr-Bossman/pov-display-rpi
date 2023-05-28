@@ -27,8 +27,13 @@ int main(int argc, char *argv[])
 	bool swap = false;
 	uint16_t buffer[3][DEGREESIN][RINGS] = {0};
 
+#ifndef DESKTOP_TEST
 	std::thread dis(display, &go, buffer, &swap);
+#endif
 	render16(argv[1], &go, buffer, std::stoi(argv[2]), &swap,(std::stoi(argv[3]))?true:false);
+#ifndef DESKTOP_TEST
 	dis.join();
+#endif
+	std::cout << std::endl;
 	return 0;
 }
