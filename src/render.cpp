@@ -63,6 +63,7 @@ static inline size_t rad_index(size_t deg,size_t rad) {
 
 static cv::Vec2i* compute_cartesian2polarLUT(void) {
 	cv::Vec2i* C2P_LUT = new cv::Vec2i[DEGREESIN*RINGS];
+	#pragma omp parallel for collapse(2)
 	for (int d = 0; d < DEGREESIN; d++)
 	for (int radius = 0; radius < RINGS; radius++) {
 		int x = -(int)round(cos(to_rad((double)d / ((double)DEGREESIN / 360.0))) * radius);
@@ -73,6 +74,7 @@ static cv::Vec2i* compute_cartesian2polarLUT(void) {
 }
 
 static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &frame,int frame_buf_num,cv::Vec2i* C2P_LUT) {
+	#pragma omp parallel for collapse(2)
 	for (int d = 0; d < DEGREESIN; d++)
 	for (int radius = 0; radius < RINGS; radius++) {
 		auto tmp = C2P_LUT[rad_index(d,radius)];
