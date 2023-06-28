@@ -86,17 +86,21 @@ static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &fram
 
 int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_t fps, bool *swap, bool fits) {
 	cv::VideoCapture cap(argv);
-	uint64_t last = 0;
+	uint64_t last = 0, i = 0, start;
 	uint64_t delay = 1000000000 / fps;
 	int frame_buf_num = 2;
 	cv::Vec2i* C2P_LUT = nullptr;
 	cv::Mat frame;
+
+	start = nanos();
+
 	if (!cap.isOpened()) {
 		std::cout << "Error opening video stream or file" << std::endl;
 		return -1;
 	}
 
 	while (*go) {
+		i++;
 		cap >> frame;
 		if (frame.empty())
 			break;
@@ -118,7 +122,11 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 			*swap = false;
 		}
 #ifdef DESKTOP_TEST
-		std::cout << "\rframe_time: " << nanos()-last << "ns    " << std::flush;
+		std::cout << "\rfps " << ((double)i*1000000000.0)/((double)(nanos()-start))
+		<< " fill time: " << nanos()-last << "ns    " << std::flush;
+#else
+(void)i;
+(void)start;
 #endif
 	}
 	delete[] C2P_LUT;
