@@ -19,8 +19,9 @@ int main(int argc, char *argv[])
 	signal(SIGINT, sigm);
 	if(argc < 1) {
 		printf("argv must have program name!\n");
-		exit(-1);  
+		exit(-1);
 	}
+
 	if(argc != 4){
 		printf("%s (path to video file) (fps) (fit type)\n",argv[0]);
 		exit(-1);

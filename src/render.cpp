@@ -27,8 +27,7 @@ static cv::Mat fit(const cv::Mat &img) {
 	int down = (size - height_small + 1) / 2;
 	int left = (size - width_small) / 2;
 	int right = (size - width_small + 1) / 2;
-	cv::copyMakeBorder(out, out, top, down, left, right, cv::BORDER_CONSTANT,
-					   cv::Scalar(0, 0, 0));
+	cv::copyMakeBorder(out, out, top, down, left, right, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
 	return out;
 }
 
@@ -38,15 +37,11 @@ static cv::Mat crop(const cv::Mat &img) {
 	int height = img.rows;
 	cv::Rect crop;
 	if (width >= height) {
-		resize(img, out,
-			   cv::Size(((double)RINGS * 2 * width) / (double)height,
-						RINGS * 2));
+		resize(img, out, cv::Size(((double)RINGS * 2 * width) / (double)height, RINGS * 2));
 		int mid = (out.cols - (RINGS * 2)) / 2;
 		crop = cv::Rect(mid, 0, RINGS * 2, RINGS * 2);
 	} else {
-		resize(img, out,
-			   cv::Size(RINGS * 2,
-						((double)RINGS * 2 * height) / (double)width));
+		resize(img, out, cv::Size(RINGS * 2, ((double)RINGS * 2 * height) / (double)width));
 		int mid = (out.rows - (RINGS * 2)) / 2;
 		crop = cv::Rect(0, mid, RINGS * 2, RINGS * 2);
 	}
@@ -57,7 +52,7 @@ static inline double to_rad(double degree) {
 	return (degree * (M_PI / 180));
 }
 
-static inline size_t rad_index(size_t deg,size_t rad) {
+static inline size_t rad_index(size_t deg, size_t rad) {
 	return ((deg*RINGS) + rad);
 }
 
@@ -68,7 +63,7 @@ static cv::Vec2i* compute_cartesian2polarLUT(void) {
 	for (int radius = 0; radius < RINGS; radius++) {
 		int x = -(int)round(cos(to_rad((double)d / ((double)DEGREESIN / 360.0))) * radius);
 		int y = -(int)round(sin(to_rad((double)d / ((double)DEGREESIN / 360.0))) * radius);
-		C2P_LUT[rad_index(d,radius)] = cv::Vec2i(x,y);
+		C2P_LUT[rad_index(d, radius)] = cv::Vec2i(x, y);
 	}
 	return C2P_LUT;
 }
@@ -77,7 +72,7 @@ static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &fram
 	#pragma omp parallel for collapse(2)
 	for (int d = 0; d < DEGREESIN; d++)
 	for (int radius = 0; radius < RINGS; radius++) {
-		auto tmp = C2P_LUT[rad_index(d,radius)];
+		auto tmp = C2P_LUT[rad_index(d, radius)];
 		int x = tmp[0];
 		int y = tmp[1];
 		if (abs(x) >= frame.cols / 2 || abs(y) >= frame.rows / 2) {
@@ -95,14 +90,13 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 	uint64_t delay = 1000000000 / fps;
 	int frame_buf_num = 2;
 	cv::Vec2i* C2P_LUT = nullptr;
+	cv::Mat frame;
 	if (!cap.isOpened()) {
 		std::cout << "Error opening video stream or file" << std::endl;
 		return -1;
 	}
 
 	while (*go) {
-
-		cv::Mat frame;
 		cap >> frame;
 		if (frame.empty())
 			break;
@@ -115,7 +109,7 @@ int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_
 
 		while (last + delay > nanos());
 		last = nanos();
-		fill_buffer(buffer,frame,frame_buf_num,C2P_LUT);
+		fill_buffer(buffer, frame, frame_buf_num, C2P_LUT);
 		if (*swap) {
 			if (frame_buf_num == 2)
 				frame_buf_num = 0;

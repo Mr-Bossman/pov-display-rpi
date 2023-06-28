@@ -37,7 +37,7 @@ void GPIOPinmode(int pin,int dir){
 }
 
 int unmapG(){
-	return munmap(gpio_map,BLOCK_SIZE);
+	return munmap(gpio_map, BLOCK_SIZE);
 }
 
 int GPIOInit()
