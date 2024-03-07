@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	std::thread dis(display, &go, buffer, &swap);
 #endif
 	render16(argv[1], &go, buffer, std::stoi(argv[2]), &swap,(std::stoi(argv[3]))?true:false);
+	go = false;
 #ifndef DESKTOP_TEST
 	dis.join();
 #endif

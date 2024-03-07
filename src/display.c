@@ -67,6 +67,7 @@ void display(bool *go, const uint16_t polar_frames[3][DEGREESIN][CHIPS * 12], bo
 		}
 	}
 	freeIO(request, event_buffer);
+	*go = false;
 }
 
 static uint64_t getDelay(struct gpiod_edge_event *event, uint64_t *last) {
