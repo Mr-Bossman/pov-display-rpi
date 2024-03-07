@@ -1,6 +1,7 @@
-#include "common.h"
 #ifndef SPI_H
 #define SPI_H
+#include "common.h"
+
 typedef struct spiMode
 {
 	uint8_t mode;

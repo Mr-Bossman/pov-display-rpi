@@ -2,10 +2,11 @@
 #include <iostream>
 #include <thread>
 #include <signal.h>
-#include "display.h"
-#include "GPIO.h"
 #include "render.h"
-#include "spi.h"
+
+extern "C" {
+#include "display.h"
+}
 
 static bool go = true;
 

@@ -1,4 +1,6 @@
+#include "common.h"
 #include "tlc59711.h"
+#include "spi.h"
 
 static uint8_t command[4];
 static void CommandInit(uint8_t _command[4]);

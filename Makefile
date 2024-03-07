@@ -2,14 +2,15 @@ BUILD_DIR = out
 CXX = g++
 CC = gcc
 CXXFLAGS = $(shell pkg-config --cflags opencv4) -fopenmp
-LIBS = $(shell pkg-config --libs opencv4) -fopenmp
+CFLAGS = $(shell pkg-config --cflags libgpiod)
+LIBS = $(shell pkg-config --libs opencv4 libgpiod) -fopenmp
 
-C_SOURCES = src/display.c src/GPIO.c src/spi.c src/tlc59711.c
+C_SOURCES = src/display.c src/gpio_ctl.c src/spi.c src/tlc59711.c
 CXX_SOURCES = src/main.cpp src/render.cpp
 C_INCLUDES = -Iinclude
 
-CXXFLAGS += $(C_INCLUDES) -fopenmp -O3 -std=c++11 -Wall -Wextra -pedantic
-CFLAGS = $(C_INCLUDES) -fopenmp -O3 -std=c11 -Wall -Wextra -pedantic
+CXXFLAGS += $(C_INCLUDES) -fopenmp -g -O3 -std=c++11 -Wall -Wextra -pedantic
+CFLAGS += $(C_INCLUDES) -fopenmp -g -O3 -std=c11 -Wall -Wextra -pedantic
 
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CXX_SOURCES:.cpp=.o)))
