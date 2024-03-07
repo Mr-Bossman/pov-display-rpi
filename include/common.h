@@ -8,4 +8,3 @@
 
 #define CHIPS 6
 #define DEGREESIN 360
-#define DESKTOP_TEST

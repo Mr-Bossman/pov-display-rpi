@@ -17,11 +17,15 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CXX_SOURCES:.cpp=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 vpath %.cpp $(sort $(dir $(CXX_SOURCES)))
 
+.PHONY: all test run clean
+
 all: pov
+
+test:
+	$(MAKE) pov CFLAGS="$(CFLAGS) -DDESKTOP_TEST"
 
 run: all
 	./pov test.mp4 30 0
-
 clean:
 	rm -f out/*
 
