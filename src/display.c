@@ -23,6 +23,12 @@ static uint64_t getDelay(struct gpiod_edge_event *event, uint64_t *last);
 static int display_lines(bool *go, struct gpiod_line_request * request, uint64_t delay,
 	const uint16_t polar_frames[DEGREESIN][CHIPS * 12]);
 
+static uint64_t nanos() {
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	return ((uint64_t)now.tv_sec) * 1000000000 + ((uint64_t)now.tv_nsec);
+}
+
 static inline void set_affinity(void) {
 	cpu_set_t cpuset;
 	CPU_ZERO(&cpuset); //clears the cpuset
@@ -33,7 +39,7 @@ static inline void set_affinity(void) {
 
 void display(bool *go, const uint16_t polar_frames[3][DEGREESIN][CHIPS * 12], bool *swap) {
 
-	uint64_t delay = 1, last = 0;
+	uint64_t delay = 1, last = nanos();
 	int p = 0, err, deg;
 	struct gpiod_edge_event *event;
 	struct gpiod_edge_event_buffer *event_buffer;
@@ -57,7 +63,8 @@ void display(bool *go, const uint16_t polar_frames[3][DEGREESIN][CHIPS * 12], bo
 			// Error goto FreeIO
 			break;
 		}
-		delay = getDelay(event, &last) + ((delay*deg)/DEGREESIN) - delay;
+
+		delay = getDelay(event, &last);
 		if (!(*swap)) {
 			if (p == 2)
 				p = 0;
@@ -79,9 +86,12 @@ static uint64_t getDelay(struct gpiod_edge_event *event, uint64_t *last) {
 static int display_lines(bool *go, struct gpiod_line_request * request, uint64_t delay,
 	const uint16_t polar_frames[DEGREESIN][CHIPS * 12]) {
 	int deg, err, edge;
+	uint64_t start = nanos(),ndelay;
 	for (deg = 0; deg < DEGREESIN; deg++) { // go thorugh degrees
 		// sleep between lines
-		edge = gpiod_line_request_wait_edge_events(request, delay);
+		ndelay = (nanos()-start);
+                ndelay = (delay*(deg+1) < ndelay)? 1 : (delay*(deg+1) - ndelay);
+		edge = gpiod_line_request_wait_edge_events(request, ndelay);
 		if (edge == -1) {
 			fprintf(stderr, "gpiod_line_request_wait_edge_events error: %s\n",
 				strerror(errno));
