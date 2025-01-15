@@ -36,7 +36,7 @@ static inline void set_affinity(void) {
 	CPU_ZERO(&cpuset); //clears the cpuset
 	CPU_SET(0, &cpuset); //set CPU 0 on cpuset
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
-	setpriority(PRIO_PROCESS, 0, 20);
+	setpriority(PRIO_PROCESS, 0, -20);
 }
 
 struct data{

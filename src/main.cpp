@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	CPU_SET(2, &cpuset); //set CPU 0 on cpuset
 	CPU_SET(3, &cpuset); //set CPU 0 on cpuset
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
-	setpriority(PRIO_PROCESS, 0, 20);
+	setpriority(PRIO_PROCESS, 0, -18);
 	render16(argv[1], &go, buffer, std::stoi(argv[2]), &swap,(std::stoi(argv[3]))?true:false);
 	go = false;
 #ifndef DESKTOP_TEST
