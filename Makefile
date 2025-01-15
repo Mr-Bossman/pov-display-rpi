@@ -22,7 +22,7 @@ vpath %.cpp $(sort $(dir $(CXX_SOURCES)))
 all: pov
 
 test:
-	$(MAKE) pov CFLAGS="$(CFLAGS) -DDESKTOP_TEST"
+	$(MAKE) pov CFLAGS="$(CFLAGS) -DDESKTOP_TEST" CXXFLAGS="$(CXXFLAGS) -DDESKTOP_TEST"
 
 run: all
 	./pov test.mp4 30 0
