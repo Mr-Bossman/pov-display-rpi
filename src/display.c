@@ -3,7 +3,9 @@
 #include <time.h>
 #include <pthread.h>
 #include <sched.h>
+#include <sys/resource.h>
 #include <gpiod.h>
+#include <unistd.h>
 #include "display.h"
 #include "gpio_ctl.h"
 #include "spi.h"
@@ -34,9 +36,24 @@ static inline void set_affinity(void) {
 	CPU_ZERO(&cpuset); //clears the cpuset
 	CPU_SET(0, &cpuset); //set CPU 0 on cpuset
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
+	setpriority(PRIO_PROCESS, 0, 20);
 }
 
+struct data{
+	const uint16_t (*lines)[72];
+	int ind;
+} val;
 
+static void* do_line(void * none){
+	(void)none;
+	while(1) {
+		int tmp = val.ind;
+		while(tmp == val.ind) usleep(1);
+		tmp = val.ind;
+		disp_line(val.lines[tmp]);
+	}
+	return NULL;
+}
 void display(bool *go, const uint16_t polar_frames[3][DEGREESIN][CHIPS * 12], bool *swap) {
 
 	uint64_t delay = 1, last = nanos();
@@ -50,8 +67,13 @@ void display(bool *go, const uint16_t polar_frames[3][DEGREESIN][CHIPS * 12], bo
 	if (err == -1)
 		return;
 
+	val.ind = 0;
+	pthread_t pid;
+	pthread_create(&pid, NULL, &do_line, NULL);
 
 	while (*go) { // main loop
+		val.lines = &*(polar_frames[p]);
+
 		deg = display_lines(go, request, delay, polar_frames[p]);
 		// Error goto FreeIO
 		if(deg == -1)
@@ -85,27 +107,26 @@ static uint64_t getDelay(struct gpiod_edge_event *event, uint64_t *last) {
 
 static int display_lines(bool *go, struct gpiod_line_request * request, uint64_t delay,
 	const uint16_t polar_frames[DEGREESIN][CHIPS * 12]) {
-	int deg, err, edge;
+	int deg, edge;
 	uint64_t start = nanos(),ndelay;
 	for (deg = 0; deg < DEGREESIN; deg++) { // go thorugh degrees
 		// sleep between lines
 		ndelay = (nanos()-start);
-                ndelay = (delay*(deg+1) < ndelay)? 1 : (delay*(deg+1) - ndelay);
+                ndelay = (delay*(deg+1) < ndelay)? 0 : (delay*(deg+1) - ndelay);
 		edge = gpiod_line_request_wait_edge_events(request, ndelay);
 		if (edge == -1) {
 			fprintf(stderr, "gpiod_line_request_wait_edge_events error: %s\n",
 				strerror(errno));
 			return -1;
 		}
+		val.ind = deg;
 		// Event is pending
 		if (edge == 1)
 			return deg;
 		// Need to exit
 		if(!*go)
 			return -1;
-		err = disp_line(polar_frames[deg]);
-		if(err == -1)
-			return -1;
+
 	}
 	while (1) {
 		edge = gpiod_line_request_wait_edge_events(request, 1);

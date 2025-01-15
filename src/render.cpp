@@ -85,8 +85,7 @@ static void fill_buffer(uint16_t buffer[3][DEGREESIN][RINGS],const cv::Mat &fram
 }
 
 int render16(char *argv, bool *go, uint16_t buffer[3][DEGREESIN][RINGS], uint64_t fps, bool *swap, bool fits) {
-	cv::VideoCapture cap(argv, cv::CAP_FFMPEG,
-	{cv::CAP_PROP_HW_ACCELERATION,cv::VIDEO_ACCELERATION_MFX});
+	cv::VideoCapture cap(argv, cv::CAP_ANY);
 	uint64_t last = 0, i = 0, start;
 	uint64_t delay = 1000000000 / fps;
 	int frame_buf_num = 1;
